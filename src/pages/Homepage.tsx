@@ -143,7 +143,7 @@ const Heading: React.FC<HeadingProps> = () => {
                 container
                 item
                 justify="space-around"
-                style={{ border: '2px solid green' }}
+                 
             >
                 {buttons.map((btn, i) => {
                     return (
@@ -205,7 +205,7 @@ const AdminInterface: React.FC<AdminInterfaceProps> = () => {
 
     return (
         <Container
-            style={{ margin: '2rem auto auto', border: '2px solid red' }}
+            style={{ margin: '2rem auto auto' }}
         >
             <Typography
                 style={{ fontSize: '1.2rem', margin: '1rem 0', opacity: '0.6' }}
@@ -262,7 +262,7 @@ const TableHeader = () => {
             container
             direction="row"
             justify="flex-start"
-            style={{ gap: '0.5rem' }}
+            style={{ gap: '0.5rem',margin:'2rem 0' }}
         >
             {btnNames.map((btn, i) => {
                 return (
@@ -271,8 +271,7 @@ const TableHeader = () => {
                         container
                         // justify="center"
                         key={i}
-                        style={{
-                            border: '2px solid red',
+                        style={{ 
                             width: btn.width,
                         }}
                     >
@@ -316,8 +315,7 @@ const Row = ({ username, room, availability }: RowProps) => {
             value: 'Toggle Availability',
             width: '15rem',
             on_click: async(e:any) => {
-                // toggle availability of the respective button
-                console.log('click captured')
+                // toggle availability of the respective button 
                 try {
                     const {status,data} = await axios.post(aws+'/rooms/toggle-room',{
                         name: room
@@ -360,8 +358,7 @@ const Row = ({ username, room, availability }: RowProps) => {
                         container
                         // justify="center"
                         key={i}
-                        style={{
-                            border: '2px solid red',
+                        style={{ 
                             width: btn.width,
                         }}
                     >
@@ -380,8 +377,7 @@ const Row = ({ username, room, availability }: RowProps) => {
                             </Typography>
                         ) : (
                             <Button
-                                style={{
-                                    border: '2px solid blue',
+                                style={{ 
                                     height: 'auto',
                                 }}
                                 onClick={(e)=>btn.on_click?.(e)}
