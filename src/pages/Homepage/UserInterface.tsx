@@ -129,8 +129,11 @@ const Row = ({room, availability}:RowProps) => {
         // },
     ]
 
-    const unbook = async() => {
-        console.log('unbooking');
+    const unbook = async() => { 
+        if(!email) {
+            alert('You are not logged in to take this action.');
+            return;
+        }
         try {
             const {status,data} = await axios.post(aws+'/rooms/unbook',{name:room,email});
             console.log({status,data});
@@ -142,7 +145,10 @@ const Row = ({room, availability}:RowProps) => {
         }
     } 
     const bookNow = async() => {
-        console.log('booking');
+        if(!email) {
+            alert('You are not logged in to take this action.');
+            return;
+        }
         try {
             const {status,data} = await axios.post(aws+'/rooms/book-now',{name:room,email});
             console.log({status,data});
