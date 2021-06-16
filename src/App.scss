@@ -1,0 +1,86 @@
+ @import url('https://fonts.googleapis.com/css?family=Rosario|Poppins|Archivo+Black|Aleo|Dosis|Open+Sans|Montaga|Roboto|Work+Sans|Fredoka+On|Cardo|Muli|Inter|Alegreya+Sans+SC|Alegreya+Sans|Alegreya|Atma|Pompiere&display=swap');
+ 
+
+:root {
+    /* fonts */
+    /*  --cutive: 'Cutive', serif;
+  --subHeading : 'Nanum Brush Script', cursive; */
+    /* --architectsdaughter: 'Architects Daughter', cursive; */
+    --default: 'Montserrat', sans-serif;
+    --read: 'Montaga', serif;
+    --readlite: 'Dosis', sans-serif;
+    --headline: 'Aleo', serif;
+    --sans: 'Open Sans', sans-serif;
+    --koho: 'KoHo', sans-serif;
+    --poppins: 'Poppins', sans-serif;
+
+    --orange: #e17909;
+    --googlered: #b31b1b;
+    --facebookblue: #4267b2;
+    --buttonBlue: #0099ff;
+    --button: 'Inter', sans-serif;
+    --whitepopup: linear-gradient(
+        128deg,
+        rgba(103, 89, 125, 1) 0%,
+        rgba(17, 18, 39, 1) 100%
+    );
+
+    --largefont: 1.3rem;
+    --normalfont: 1.1rem;
+
+    --accordionOpen: linear-gradient(
+        90deg,
+        rgba(215, 206, 255, 0.5) 0%,
+        rgba(235, 235, 235, 0) 100%
+    );
+    --accordionHovered: linear-gradient(
+        128deg,
+        rgba(228, 226, 226, 1) 0%,
+        rgba(235, 235, 235, 1) 100%
+    );
+
+    --clipon: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    --clipooff: polygon(0 0, 100% 0, 100% 0, 0 0);
+
+    --pompiere: 'Pompiere', cursive;
+    --atma: 'Atma', cursive;
+    --roboto: 'Roboto', sans-serif;
+    --inter: 'Inter', sans-serif;
+    --muli: 'Muli', sans-serif;
+    --cardo: 'Cardo', serif;
+    --bold: 'Archivo Black', sans-serif;
+    --boldest: 'Fredoka One', cursive;
+    --work: 'Work Sans', sans-serif;
+
+    --inputBorder: #bdbdbd;
+    --placeholder: 'Alegreya Sans SC', sans-serif;
+    --rosario: 'Rosario', sans-serif;
+    --button: 'Alegreya Sans SC', sans-serif;
+    --link: #071bcf;
+} 
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Alegreya Sans SC', 'Pompiere', 'Alegreya Sans', 'Roboto',
+        sans-serif, cursive;
+    scroll-behavior: smooth;
+}
+img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+table,
+tbody,
+tr,
+td {
+    border-spacing: 0;
+} 
+a {
+    text-decoration: none;
+    color: inherit;
+    font-size: inherit;
+    font: inherit;
+}
