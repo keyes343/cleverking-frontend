@@ -445,9 +445,29 @@ const Row = ({ email, room, availability }: RowProps) => {
                 } catch (error) {
                     console.log(error)
                 }
-
             },
         },
+        {
+            value:'Delete',
+            width:"10rem",
+            on_click: async() => {
+                try {
+                    const {data,status} = await axios.post(aws+'/rooms/delete-room',{
+                        name:room
+                    })
+                    if(status === 200 && allRooms){
+                        // delete success
+                        const aa = [...allRooms];
+                        const index = allRooms.findIndex(rm=> rm.name === room);
+                        aa.splice(index,1);
+                        set_allRooms([...aa]);
+                    }
+                } catch (error) {
+                    console.log({error})
+                }
+            }
+
+        }
     ];
     return (
         <Grid
@@ -487,7 +507,7 @@ const Row = ({ email, room, availability }: RowProps) => {
                                 }}
                                 onClick={(e)=>btn.on_click?.(e)}
                             >
-                                Toggle Availability
+                                {btn.value}
                             </Button>
                         )}
                     </Grid>
