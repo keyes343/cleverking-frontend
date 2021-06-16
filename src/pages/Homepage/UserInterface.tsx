@@ -26,7 +26,7 @@ const UserInterface: React.FC<UserInterfaceProps> = () => {
                 direction="row"
                 style={{ gap: '0.5rem' }}
             >
-                <Grid item style={{ width: 'auto', border: '1px solid green' }}>
+                <Grid item style={{ width: 'auto' }}>
                     <CustomButton
                         name="Show Available Rooms"
                         on_click={() => {
@@ -34,7 +34,7 @@ const UserInterface: React.FC<UserInterfaceProps> = () => {
                         }}
                     />
                 </Grid>
-                <Grid item style={{ width: 'auto', border: '1px solid green' }}>
+                <Grid item style={{ width: 'auto' }}>
                     <CustomButton
                         name="Show My Booking List"
                         on_click={() => {
@@ -120,7 +120,7 @@ const Row = ({room, availability}:RowProps) => {
             width: '9rem',
         },
         {
-            value: bookingStatus?'Booked ':'Book now',
+            value: bookingStatus?'Booked':'Book now',
             width: '13rem',
         },
         // {
@@ -130,8 +130,10 @@ const Row = ({room, availability}:RowProps) => {
     ]
 
     const unbook = async() => {
+        console.log('unbooking');
         try {
             const {status,data} = await axios.post(aws+'/rooms/unbook',{name:room,email});
+            console.log({status,data});
             if(status===200){
                 setBookingStatus(false);
             }            
@@ -140,8 +142,10 @@ const Row = ({room, availability}:RowProps) => {
         }
     } 
     const bookNow = async() => {
+        console.log('booking');
         try {
             const {status,data} = await axios.post(aws+'/rooms/book-now',{name:room,email});
+            console.log({status,data});
             if(status===200){
                 setBookingStatus(true);
             }

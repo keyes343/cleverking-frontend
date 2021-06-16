@@ -15,6 +15,8 @@ import { t } from './incoming';
 import axios from 'axios';
 import './styles.scss';
 import UserInterface from './Homepage/UserInterface';
+import firebase from './firebase';
+
 
 export interface HomepageProps {}
 
@@ -32,7 +34,7 @@ export const State_ctx = createContext<State_type | null>(null);
 // --- DISPATCH
 export type Dispatch_type = {
     set_loggedIn: Dispatch<SetStateAction<false | 'user' | 'admin'>>;
-    set_email: Dispatch<SetStateAction<string>>;
+    set_email: Dispatch<SetStateAction<string|null>>;
     set_whichRoom: Dispatch<SetStateAction<'available'|'booking'>>;
     set_allRooms: Dispatch<SetStateAction<null | t.room[]>>;
 };
@@ -40,12 +42,40 @@ export const Dispatch_ctx = createContext<Dispatch_type|null>(null);
 
 const Homepage = () => {
     const [loggedIn, set_loggedIn] = useState<'user' | 'admin' | false>('user');
-    const [email, set_email] = useState('null@some.com');
-    const [googleId, set_googleId] = useState(null);
+    const [email, set_email] = useState<null|string>(null); 
     const [whichRoom, set_whichRoom] = useState<'available'|'booking'>('available');
     const [allRooms, set_allRooms] = useState<t.room[] | null>(null);
-    // const aws = 'https://chde3qurk0.execute-api.ap-south-1.amazonaws.com/dev'; // verified for cleverKings
-    const aws = 'http://localhost:5000';
+    const aws = 'https://chde3qurk0.execute-api.ap-south-1.amazonaws.com/dev'; // verified for cleverKings
+    // const aws = 'http://localhost:5000';
+
+
+    // ACKNOWLEDGE USER in database once user logs in
+    const [user_exists_in_db, set_user_exists_in_db] = useState<null|boolean>(null);
+
+    const touch_database = React.useCallback(async () => { 
+        const touchpoint = aws + '/users/acknowledge';
+
+        // MAKING AXIOS CALL TO VERIFY USER IN MONGOOSE
+        const { status, data } = await axios.post(touchpoint, {email});
+
+        if (status === 200) {
+            set_user_exists_in_db(true);
+        } else {
+            alert(
+                'Something went wrong. Please refresh and try loggin in again.'
+            );
+        }
+    }, [email]);
+    // when user is logged in and database check has not been done
+    React.useEffect(() => { 
+
+        if (!!email && user_exists_in_db === null) {
+            touch_database();
+        }
+    }, [email, touch_database, user_exists_in_db]);
+
+
+
 
     useEffect(() => {
         if (!allRooms) {
@@ -85,10 +115,26 @@ const Homepage = () => {
         return newDispatch;
     }, []);
 
+    useEffect(() => {
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) { 
+                // if user is logged in with OTP
+                if(!email){
+                    set_email(user.email); 
+                }
+            }
+        });
+    }, [email]);
+
+    
     return (
         <State_ctx.Provider value={stateMemo}>
             <Dispatch_ctx.Provider value={dispatchMemo}>
                 <Heading />
+                {/* {
+                    loggedIn === 'user' && <LoginDetails />
+                } */}
+                
                 {loggedIn === 'user' ? (
                     <UserInterface />
                 ) : (
@@ -101,39 +147,91 @@ const Homepage = () => {
 
 export default Homepage;
 
+// -------------- children - Login details of user
+
+export interface LoginDetailsProps {
+    
+}
+ 
+// const LoginDetails: React.FC<LoginDetailsProps> = () => {
+//     return ( 
+//         <Grid container style={{margin:'2rem 0', border:'2px solid'}} >
+//             <Grid container item>
+
+//             </Grid>
+//         </Grid>
+//      );
+// }
+
 // -------------- children - HEADING
 
 export interface HeadingProps {}
 
 const Heading: React.FC<HeadingProps> = () => {
-    const { loggedIn } = useContext(State_ctx)!;
-    const { set_loggedIn } = useContext(Dispatch_ctx)!;
+    const { loggedIn, email } = useContext(State_ctx)!;
+    const { set_loggedIn, set_email } = useContext(Dispatch_ctx)!;
 
     useEffect(() => {
-        console.log({ loggedIn });
-    }, [loggedIn]);
+        console.log({ loggedIn,email });
+    }, [loggedIn, email]);
+
+
+    const initiate_googleLogin = async () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.addScope('profile');
+        provider.addScope('email');
+
+        try {
+            const result = await firebase.auth().signInWithPopup(provider);
+            if (result && result.user) {
+                // setting up auth in context
+                set_email(result.user.email)
+                
+            }
+        } catch (error) {
+            console.log({ error });
+        }
+    };
 
     const buttons = [
         {
-            text: 'Admin Login',
+            text: 'View as Admin',
+            active : loggedIn === 'admin',
             on_click: () => {
                 console.log('Admin btn clicked');
                 set_loggedIn('admin');
             },
         },
         {
-            text: 'User Login',
+            text: 'View as User',
+            active : loggedIn === 'user',
             on_click: () => {
                 console.log('User btn clicked');
                 set_loggedIn('user');
+                if(!email){
+                    initiate_googleLogin()
+                }
+            },
+        },
+        {
+            text: email?'Click to Logout':'Click to Login',
+            on_click: () => {
+                console.log('User btn clicked');
+                set_loggedIn(false);
+                set_email(null);
+                if(!email){
+                    initiate_googleLogin()
+                }else{
+                    firebase.auth().signOut();
+                }
             },
         },
     ];
     return (
         <Grid
             container
-            justify="center"
-            className={'heading'}
+            justify="center" 
+            // className={'heading'} 
             // onClick={() => {
             //     console.log('clicked --- yes ');
             //     set_loggedIn(!loggedIn);
@@ -143,13 +241,15 @@ const Heading: React.FC<HeadingProps> = () => {
                 container
                 item
                 justify="space-around"
+                style={{margin:'2rem 0'}}
                  
             >
                 {buttons.map((btn, i) => {
                     return (
-                        <Grid key={i} xs={5} item container justify="center">
+                        <Grid key={i} xs={4} item container justify="center">
                             <Button
                                 className="btn"
+                                style={{border:'2px solid grey', borderRadius:'7px', backgroundColor:btn.active ? 'lightblue':''}}
                                 onClick={() => btn.on_click()}
                             >
                                 {btn.text}
@@ -159,6 +259,10 @@ const Heading: React.FC<HeadingProps> = () => {
                         </Grid>
                     );
                 })}
+            </Grid>
+
+            <Grid container item style={{border:'2px solid red'}} >
+                
             </Grid>
         </Grid>
     );
@@ -216,7 +320,7 @@ const AdminInterface: React.FC<AdminInterfaceProps> = () => {
             {
                 !!allRooms && allRooms.map((room,i)=>{
                     return(
-                        <Row key={i} username={room.userEmail??''} room={room.name} availability={room.availability} />
+                        <Row key={i} email={room.userEmail??''} room={room.name} availability={room.availability} />
 
                     )
                 })
@@ -246,7 +350,7 @@ const TableHeader = () => {
     const btnNames = [
         {
             name: 'username',
-            width: '7rem',
+            width: '18rem',
         },
         {
             name: 'Room no.',
@@ -291,17 +395,17 @@ const TableHeader = () => {
 };
 
 type RowProps = {
-    username: string;
+    email: string;
     room: number;
     availability: boolean;
 };
-const Row = ({ username, room, availability }: RowProps) => {
+const Row = ({ email, room, availability }: RowProps) => {
     const {aws,allRooms} = useContext(State_ctx)!;
     const {set_allRooms} = useContext(Dispatch_ctx)!;
     const btnNames = [
         {
-            value: username,
-            width: '7rem',
+            value: email,
+            width: '18rem',
         },
         {
             value: room,
@@ -328,6 +432,7 @@ const Row = ({ username, room, availability }: RowProps) => {
                             const aa = [...allRooms];
                             if(data.msg === 'deleted'){
                                 aa[index].availability = false;   
+                                aa[index].userEmail = '';   
                             }else if(data.msg === 'added'){
                                 aa[index].availability = true;   
                             }
