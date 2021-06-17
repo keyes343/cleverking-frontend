@@ -117,8 +117,7 @@ const Homepage = () => {
 
     useEffect(() => {
         firebase.auth().onAuthStateChanged((user) => {
-            if (user) { 
-                // if user is logged in with OTP
+            if (user) {  
                 if(!email){
                     set_email(user.email); 
                 }
@@ -130,10 +129,7 @@ const Homepage = () => {
     return (
         <State_ctx.Provider value={stateMemo}>
             <Dispatch_ctx.Provider value={dispatchMemo}>
-                <Heading />
-                {/* {
-                    loggedIn === 'user' && <LoginDetails />
-                } */}
+                <Heading /> 
                 
                 {loggedIn === 'user' ? (
                     <UserInterface />
@@ -145,23 +141,7 @@ const Homepage = () => {
     );
 };
 
-export default Homepage;
-
-// -------------- children - Login details of user
-
-export interface LoginDetailsProps {
-    
-}
- 
-// const LoginDetails: React.FC<LoginDetailsProps> = () => {
-//     return ( 
-//         <Grid container style={{margin:'2rem 0', border:'2px solid'}} >
-//             <Grid container item>
-
-//             </Grid>
-//         </Grid>
-//      );
-// }
+export default Homepage; 
 
 // -------------- children - HEADING
 
@@ -216,7 +196,7 @@ const Heading: React.FC<HeadingProps> = () => {
         {
             text: email?'Click to Logout':'Click to Login',
             on_click: () => {
-                console.log('User btn clicked');
+                console.log('Login btn clicked');
                 set_loggedIn(false);
                 set_email(null);
                 if(!email){
@@ -230,12 +210,7 @@ const Heading: React.FC<HeadingProps> = () => {
     return (
         <Grid
             container
-            justify="center" 
-            // className={'heading'} 
-            // onClick={() => {
-            //     console.log('clicked --- yes ');
-            //     set_loggedIn(!loggedIn);
-            // }}
+            justify="center"  
         >
             <Grid
                 container
@@ -419,15 +394,14 @@ const Row = ({ email, room, availability }: RowProps) => {
             value: 'Toggle Availability',
             width: '15rem',
             on_click: async(e:any) => {
-                // toggle availability of the respective button 
+                // toggle availability of the respective button / cell
                 try {
                     const {status,data} = await axios.post(aws+'/rooms/toggle-room',{
                         name: room
-                    });
-                    console.log({status,data})
+                    }); 
                     if(status === 200) {
-                        if(data && allRooms){ 
-                            const newDoc = data.doc;
+                        if(data && allRooms){  
+                            // alter specific room already stored in STATE, for little FASTER renderring
                             const index = allRooms.findIndex((room)=> room.name === data.doc.name);
                             const aa = [...allRooms];
                             if(data.msg === 'deleted'){

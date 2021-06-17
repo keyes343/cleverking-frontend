@@ -20,30 +20,7 @@ const UserInterface: React.FC<UserInterfaceProps> = () => {
             >
                 You are logged in as USER - {email}
             </Typography>
-            <Grid
-                container
-                className="red"
-                direction="row"
-                style={{ gap: '0.5rem' }}
-            >
-                <Grid item style={{ width: 'auto' }}>
-                    <CustomButton
-                        name="Show Available Rooms"
-                        on_click={() => {
-                            // something
-                        }}
-                    />
-                </Grid>
-                <Grid item style={{ width: 'auto' }}>
-                    <CustomButton
-                        name="Show My Booking List"
-                        on_click={() => {
-                            // something
-                        }}
-                    />
-                </Grid>
-            </Grid>
-
+             
              {/* ----------- conditional render ------- */}
              {
                  whichRoom === 'available' ?<AvailableRooms />:null
